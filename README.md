@@ -27,37 +27,44 @@ Serving the HTML pages.
 Testing the webserver
 
 ## PROGRAM:
+
+##SERVER:
 ```
-from http.server import HTTPServer,BaseHTTPRequestHandler
+import socket
+HOST = '127.0.0.1' 
+PORT = 65432 
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    print(f"Server started. Listening on {HOST}:{PORT}...")
+    conn, addr = s.accept()
+    with conn:
+        print(f"Connected by {addr}")
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
+            conn.sendall(data)
 
-content='''
-<!doctype html>
-<html>
-<head>
-<title> My Web Server</title>
-</head>
-<body>
-<h1>Top Five Web Application Development Frameworks</h1>
-<h2>1.Django</h2>
-<h2>2. MEAN Stack</h2>
-<h2>3. React </h2>
-</body>
-</html>
-
-
-class MyServer(BaseHTTPRequestHandler):
-    def do_GET(self):
-        print("Get request received...")
-        self.send_response(200) 
-        self.send_header("content-type", "text/html")       
-        self.end_headers()
-        self.wfile.write(content.encode())
-
-print("This is my webserver") 
-server_address =('keerthi',2323)
-httpd = HTTPServer(server_address,MyServer)
-httpd.serve_forever()
 ```
+
+##CLIENT
+```
+
+import socket
+HOST = '127.0.0.1' 
+PORT = 65432
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, PORT))
+    while True:
+        message = input("Enter message (or 'exit' to quit): ")
+        if message.lower() == 'exit':
+            break
+        s.sendall(message.encode())
+        data = s.recv(1024)
+        print(f"Echo from server: {data.decode()}")
+
+
 ##  Architecture Diagram
 
 ```bash
@@ -87,8 +94,11 @@ httpd.serve_forever()
 
 ## OUTPUT:
 ### CLIENT OUTPUT:
+<img width="1920" height="1080" alt="Screenshot (353)" src="https://github.com/user-attachments/assets/1ad0adab-daea-43b0-8fca-0cb872c3ff5b" />
+
 
 ### SERVER OUTPUT:
+<img width="1920" height="1080" alt="Screenshot (352)" src="https://github.com/user-attachments/assets/f1820462-3538-4153-9d73-8344641163a3" />
 
 ## RESULT:
 The program is executed succesfully
